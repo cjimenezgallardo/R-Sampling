@@ -1,4 +1,8 @@
 # DEFINICION DEL TAMAÑO DE LA MUESTRA
+# cambiar  ds y vi por sus datos.
+# al terminar, fijarse en el dataset MUESTRA, ese contiene la muestra segun los parametros.
+
+
 
 library(dplyr)
 
@@ -60,4 +64,3 @@ muestra <- ds %>% # ds dataset
 
 # fijarse en el dataset MUESTRA, con ese deben trabajar
 
-# cambiar  ds y vi por sus datos.
