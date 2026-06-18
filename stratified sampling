@@ -1,0 +1,63 @@
+# DEFINICION DEL TAMAÑO DE LA MUESTRA
+
+library(dplyr)
+
+N <- nrow(ds)#  dataset conjunto de datos, es el archivo de datos
+
+var_mancomunada <- ds  %>%
+  group_by(vi) %>% #variable independiente
+  summarise(
+    Nh = n(),
+    Sh2 = var(vd, na.rm = TRUE),  #vd variable dependiente
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Wh = Nh / sum(Nh)
+  ) %>%
+  summarise(
+    Sp2 = sum(Wh * Sh2)
+  ) %>%
+  pull(Sp2)
+
+var_mancomunada
+
+Z <- 1.96
+error <- 0.05   # error relativo: 5%
+
+media_esperada <- 0.15  # XX CUANTO CREE QUE SERIA EL promedio esperado entre todos los grupos
+E <- error * media_esperada
+
+
+n <- (N * Z^2 * var_mancomunada) /   (E^2 * (N - 1) + Z^2 * var_mancomunada)
+
+n <- ceiling(n)
+n  # TAMAÑO DE LA MUESTRA
+
+
+
+
+# SELECCION DE LA MUESTRA
+
+#proporcionalizando
+afijacion <- ds %>% # ds dataset
+  count(vi , name = "Nh") %>%  # vi variable independiente
+  mutate(
+    nh = round(n * Nh / N)
+  )
+
+afijacion
+
+# sleccionando
+set.seed(123)
+
+muestra <- ds %>% # ds dataset
+  group_by(vi) %>% # vi variable independiente
+  group_modify(~{
+    nh <- afijacion$nh[afijacion$vi == .y$vi]  # vi variable independiente
+    dplyr::slice_sample(.x, n = nh)
+  }) %>%
+  ungroup()
+
+# fijarse en el dataset MUESTRA, con ese deben trabajar
+
+# cambiar  ds y vi por sus datos.
